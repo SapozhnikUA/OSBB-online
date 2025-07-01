@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         OSBB - online "Зміна висоти UI OSBB-online"
-// @version      0.1
+// @name         OSBB - online "Зміна елементів UI OSBB-online"
+// @version      0.2
 // @description  Змінює деякі елементи відображення
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*

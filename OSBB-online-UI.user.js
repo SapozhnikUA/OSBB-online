@@ -1,13 +1,12 @@
 // ==UserScript==
-// @name         OSBB - online "Зміна висоти UI Accordion"
-// @namespace    http://tampermonkey.net/
+// @name         OSBB - online "Зміна висоти UI OSBB-online"
 // @version      0.1
-// @description  Змінює висоту елементів ui-accordion-content, які містять таблицю з певними стилями.
+// @description  Змінює деякі елементи відображення
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*
 // @grant        none
-// @downloadURL https://github.com/SapozhnikUA/WEB-UPROX-ADD/raw/refs/heads/main/web-uprox-modify.user.js
-// @updateURL https://github.com/SapozhnikUA/WEB-UPROX-ADD/raw/refs/heads/main/web-uprox-modify.user.js
+// @downloadURL https://github.com/SapozhnikUA/OSBB-online/raw/refs/heads/main/OSBB-online-UI.user.js
+// @updateURL https://github.com/SapozhnikUA/OSBB-online/raw/refs/heads/main/OSBB-online-UI.user.js
 // ==/UserScript==
 
 (function() {

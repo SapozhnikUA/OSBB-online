@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         OSBB - online "Зміна елементів UI OSBB-online"
-// @version      0.4
+// @version      0.5
 // @description  Змінює деякі елементи відображення та додає посилання на квитанції
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*
@@ -50,61 +50,56 @@
     function createFloatingMenu() {
         if (document.getElementById('osbb-floating-menu')) return;
 
-        // Поточний місяць у форматі YYYYMM
         const now = new Date();
         const ym = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         const links = [
-            { label: '🏦 Рахунок основний',   url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543` },
-            { label: '🏦 Рахунок додатковий', url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205` },
-            { label: '⬇️ Борги (скачати)',     url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
+            { label: '🏦 Рахунок основний',   url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543`, sameTab: true },
+            { label: '🏦 Рахунок додатковий', url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205`, sameTab: true },
             { label: '💳 Прийом',              url: `https://cabinet.osbb-online.com/Payments` },
             { label: '📦 Пачки',               url: `https://osbb-online.com/Account/NavigateExternal?type=payment_packages` },
             { label: '📋 Реєстр',              url: `https://osbb-online.com/Admin/Registry` },
             { label: '📊 Нарахування',         url: `https://osbb-online.com/Admin/Journal?yearMonth=${ym}` },
+            { label: '⬇️ Борги (скачати)',     url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
         ];
 
-        // Збережена позиція
         const savedX = parseInt(localStorage.getItem('osbb-menu-x'), 10);
         const savedY = parseInt(localStorage.getItem('osbb-menu-y'), 10);
         const startX = isNaN(savedX) ? (window.innerWidth - 200) : savedX;
         const startY = isNaN(savedY) ? 80 : savedY;
 
-        // Обгортка
         const panel = document.createElement('div');
         panel.id = 'osbb-floating-menu';
         Object.assign(panel.style, {
-            position:        'fixed',
-            left:            `${startX}px`,
-            top:             `${startY}px`,
-            zIndex:          '99999',
-            background:      '#e8e8e8',
-            border:          '1px solid #aaa',
-            borderRadius:    '6px',
-            boxShadow:       '0 2px 8px rgba(0,0,0,.35)',
-            minWidth:        '180px',
-            fontFamily:      'sans-serif',
-            fontSize:        '13px',
-            userSelect:      'none',
+            position:     'fixed',
+            left:         `${startX}px`,
+            top:          `${startY}px`,
+            zIndex:       '99999',
+            background:   '#e8e8e8',
+            border:       '1px solid #aaa',
+            borderRadius: '6px',
+            boxShadow:    '0 2px 8px rgba(0,0,0,.35)',
+            minWidth:     '180px',
+            fontFamily:   'sans-serif',
+            fontSize:     '13px',
+            userSelect:   'none',
         });
 
-        // Заголовок (drag handle)
         const header = document.createElement('div');
         header.textContent = '⚡ OSBB Меню';
         Object.assign(header.style, {
-            background:    '#999',
-            color:         '#fff',
-            padding:       '5px 8px',
-            borderRadius:  '5px 5px 0 0',
-            cursor:        'grab',
-            fontWeight:    'bold',
-            fontSize:      '12px',
-            display:       'flex',
-            justifyContent:'space-between',
-            alignItems:    'center',
+            background:     '#999',
+            color:          '#fff',
+            padding:        '5px 8px',
+            borderRadius:   '5px 5px 0 0',
+            cursor:         'grab',
+            fontWeight:     'bold',
+            fontSize:       '12px',
+            display:        'flex',
+            justifyContent: 'space-between',
+            alignItems:     'center',
         });
 
-        // Кнопка згортання
         const toggleBtn = document.createElement('span');
         toggleBtn.textContent = '▲';
         Object.assign(toggleBtn.style, {
@@ -115,17 +110,14 @@
         header.appendChild(toggleBtn);
         panel.appendChild(header);
 
-        // Тіло з посиланнями
         const body = document.createElement('div');
         body.id = 'osbb-floating-body';
-        Object.assign(body.style, {
-            padding: '6px 0',
-        });
+        Object.assign(body.style, { padding: '6px 0' });
 
-        links.forEach(({ label, url }) => {
+        links.forEach(({ label, url, sameTab }) => {
             const a = document.createElement('a');
             a.href = url;
-            a.target = '_blank';
+            a.target = sameTab ? '_self' : '_blank';
             a.rel = 'noopener';
             a.textContent = label;
             Object.assign(a.style, {
@@ -146,7 +138,7 @@
         // ── Згортання/розгортання ──
         let collapsed = localStorage.getItem('osbb-menu-collapsed') === '1';
         function applyCollapse() {
-            body.style.display  = collapsed ? 'none' : 'block';
+            body.style.display    = collapsed ? 'none' : 'block';
             toggleBtn.textContent = collapsed ? '▼' : '▲';
             localStorage.setItem('osbb-menu-collapsed', collapsed ? '1' : '0');
         }
@@ -173,7 +165,6 @@
             if (!dragging) return;
             let nx = e.clientX - ox;
             let ny = e.clientY - oy;
-            // Обмеження в межах екрану
             nx = Math.max(0, Math.min(nx, window.innerWidth  - panel.offsetWidth));
             ny = Math.max(0, Math.min(ny, window.innerHeight - panel.offsetHeight));
             panel.style.left = `${nx}px`;
@@ -184,7 +175,6 @@
             if (!dragging) return;
             dragging = false;
             header.style.cursor = 'grab';
-            // Зберігаємо позицію
             localStorage.setItem('osbb-menu-x', parseInt(panel.style.left, 10));
             localStorage.setItem('osbb-menu-y', parseInt(panel.style.top,  10));
         });

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         OSBB - online "Зміна елементів UI OSBB-online"
-// @version      0.5
+// @version      0.6
 // @description  Змінює деякі елементи відображення та додає посилання на квитанції
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*
@@ -54,12 +54,12 @@
         const ym = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         const links = [
-            { label: '🏦 Рахунок основний',   url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543`, sameTab: true },
-            { label: '🏦 Рахунок додатковий', url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205`, sameTab: true },
             { label: '💳 Прийом',              url: `https://cabinet.osbb-online.com/Payments` },
             { label: '📦 Пачки',               url: `https://osbb-online.com/Account/NavigateExternal?type=payment_packages` },
             { label: '📋 Реєстр',              url: `https://osbb-online.com/Admin/Registry` },
             { label: '📊 Нарахування',         url: `https://osbb-online.com/Admin/Journal?yearMonth=${ym}` },
+            { label: '🏦 Рахунок основний',   url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543`, sameTab: true },
+            { label: '🏦 Рахунок додатковий', url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205`, sameTab: true },
             { label: '⬇️ Борги (скачати)',     url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
         ];
 
@@ -180,12 +180,44 @@
         });
     }
 
+    // ─── 4. Плаваюча кнопка "Зберегти" на EditAccountOwner ──────────────────────
+    function createFloatingSaveButton() {
+        if (!window.location.href.includes('/Admin/EditAccountOwner/')) return;
+        if (document.getElementById('osbb-floating-save')) return;
+
+        const btn = document.createElement('button');
+        btn.id = 'osbb-floating-save';
+        btn.textContent = '💾 Зберегти';
+        Object.assign(btn.style, {
+            position:     'fixed',
+            bottom:       '24px',
+            right:        '24px',
+            zIndex:       '99999',
+            background:   '#4a7c4e',
+            color:        '#fff',
+            border:       'none',
+            borderRadius: '6px',
+            padding:      '10px 20px',
+            fontSize:     '14px',
+            fontWeight:   'bold',
+            fontFamily:   'sans-serif',
+            cursor:       'pointer',
+            boxShadow:    '0 2px 8px rgba(0,0,0,.35)',
+        });
+        btn.addEventListener('mouseenter', () => btn.style.background = '#3a6340');
+        btn.addEventListener('mouseleave', () => btn.style.background = '#4a7c4e');
+        btn.addEventListener('click', () => document.querySelector('form').submit());
+
+        document.body.appendChild(btn);
+    }
+
     // ─── Запуск ──────────────────────────────────────────────────────────────────
     function runAllModifications() {
         modifyAccordionHeight();
         if (window.location.href.includes('/Admin/Registry')) {
             addDownloadIcons();
         }
+        createFloatingSaveButton();
     }
 
     if (document.readyState === 'loading') {

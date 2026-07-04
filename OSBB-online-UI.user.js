@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         OSBB - online "Зміна елементів UI OSBB-online"
-// @version      0.6
+// @version      0.9
 // @description  Змінює деякі елементи відображення та додає посилання на квитанції
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*
@@ -54,13 +54,18 @@
         const ym = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         const links = [
-            { label: '💳 Прийом',              url: `https://cabinet.osbb-online.com/Payments` },
-            { label: '📦 Пачки',               url: `https://osbb-online.com/Account/NavigateExternal?type=payment_packages` },
-            { label: '📋 Реєстр',              url: `https://osbb-online.com/Admin/Registry` },
-            { label: '📊 Нарахування',         url: `https://osbb-online.com/Admin/Journal?yearMonth=${ym}` },
-            { label: '🏦 Рахунок основний',   url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543`, sameTab: true },
-            { label: '🏦 Рахунок додатковий', url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205`, sameTab: true },
-            { label: '⬇️ Борги (скачати)',     url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
+            { urls: [{ label: '💳 Прийом',      url: `https://cabinet.osbb-online.com/Payments` }] },
+            { urls: [{ label: '📦 Пачки',       url: `https://osbb-online.com/Account/NavigateExternal?type=payment_packages` }] },
+            { urls: [{ label: '📋 Реєстр',      url: `https://osbb-online.com/Admin/Registry` }] },
+            { urls: [{ label: '📊 Нарахування', url: `https://osbb-online.com/Admin/Journal?yearMonth=${ym}` }] },
+            { urls: [
+                { label: '🏦 Осн.',  url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26009025007543`, sameTab: true },
+                { label: 'Дод.',     url: `https://osbb-online.com/House/ViewBankAccountRests/44882?accountNumber=26001035010205`, sameTab: true },
+            ]},
+            { urls: [
+                { label: '⬇️ Борги', url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
+                { label: '📂 База',  url: `https://dontsa2a.kyiv.ua/home/administration/paymentBase/` },
+            ]},
         ];
 
         const savedX = parseInt(localStorage.getItem('osbb-menu-x'), 10);
@@ -79,7 +84,7 @@
             border:       '1px solid #aaa',
             borderRadius: '6px',
             boxShadow:    '0 2px 8px rgba(0,0,0,.35)',
-            minWidth:     '180px',
+            minWidth:     '160px',
             fontFamily:   'sans-serif',
             fontSize:     '13px',
             userSelect:   'none',
@@ -114,22 +119,43 @@
         body.id = 'osbb-floating-body';
         Object.assign(body.style, { padding: '6px 0' });
 
-        links.forEach(({ label, url, sameTab }) => {
-            const a = document.createElement('a');
-            a.href = url;
-            a.target = sameTab ? '_self' : '_blank';
-            a.rel = 'noopener';
-            a.textContent = label;
-            Object.assign(a.style, {
-                display:        'block',
-                padding:        '4px 10px',
-                color:          '#1a1a6e',
-                textDecoration: 'none',
-                whiteSpace:     'nowrap',
+        links.forEach(({ urls }) => {
+            const row = document.createElement('div');
+            Object.assign(row.style, {
+                display:      'flex',
+                padding:      '3px 10px',
+                gap:          '3px',
+                alignItems:   'center',
+                borderRadius: '3px',
             });
-            a.addEventListener('mouseenter', () => a.style.background = '#d0d0d0');
-            a.addEventListener('mouseleave', () => a.style.background = '');
-            body.appendChild(a);
+
+            urls.forEach(({ label, url, sameTab }, i) => {
+                if (i > 0) {
+                    const sep = document.createElement('span');
+                    sep.textContent = '·';
+                    Object.assign(sep.style, { color: '#888', flexShrink: '0' });
+                    row.appendChild(sep);
+                }
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = sameTab ? '_self' : '_blank';
+                a.rel = 'noopener';
+                a.textContent = label;
+                Object.assign(a.style, {
+                    color:          '#1a1a6e',
+                    textDecoration: 'none',
+                    whiteSpace:     'nowrap',
+                    padding:        '1px 3px',
+                    borderRadius:   '3px',
+                });
+                a.addEventListener('mouseenter', () => a.style.background = '#c8c8c8');
+                a.addEventListener('mouseleave', () => a.style.background = '');
+                row.appendChild(a);
+            });
+
+            row.addEventListener('mouseenter', () => row.style.background = '#dedede');
+            row.addEventListener('mouseleave', () => row.style.background = '');
+            body.appendChild(row);
         });
 
         panel.appendChild(body);

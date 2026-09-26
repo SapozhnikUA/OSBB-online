@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         OSBB - online "Зміна елементів UI OSBB-online"
-// @version      0.9
+// @version      0.10
 // @description  Змінює деякі елементи відображення та додає посилання на квитанції
 // @author       Sapozhnik
 // @match        https://osbb-online.com/*

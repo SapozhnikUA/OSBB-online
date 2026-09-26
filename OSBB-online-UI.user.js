@@ -64,7 +64,8 @@
             ]},
             { urls: [
                 { label: '⬇️ Борги', url: `https://osbb-online.com/Admin/DownloadJournalDebts?yearMonth=${ym}&workID=116027` },
-                { label: '📂 База',  url: `https://dontsa2a.kyiv.ua/home/administration/paymentBase/` },
+                // { label: '📂 База',  url: `https://dontsa2a.kyiv.ua/home/administration/paymentBase/` },
+                { label: '📂 База',  url: `https://lyceum227.kyiv.ua/backup/kuzya/administration/paymentBase/` },
             ]},
         ];
 
